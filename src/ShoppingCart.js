@@ -1,6 +1,7 @@
 export default class ShoppingCart {
   constructor() {
     this.items = [];
+    this.taxRate = 0;
   }
 
   add(product, quantity) {
@@ -37,11 +38,26 @@ export default class ShoppingCart {
     item.quantity += quantity;
   }
 
-  getTotalPrice() {
+  getTotalPriceBeforeTax() {
     const reducer = (total, item) =>
       total + item.quantity * item.product.unitPrice;
 
     return this.items.reduce(reducer, 0);
+  }
+
+  getTaxAmount() {
+    return (this.getTotalPriceBeforeTax() * this.taxRate) / 100;
+  }
+
+  getFormattedTaxAmount() {
+    return this.formatNumber(this.getTaxAmount());
+  }
+
+  getTotalPrice() {
+    const totalPriceBeforeTax = this.getTotalPriceBeforeTax();
+    const taxAmount = this.getTaxAmount();
+
+    return totalPriceBeforeTax + taxAmount;
   }
 
   getFormattedTotalPrice() {
@@ -50,5 +66,9 @@ export default class ShoppingCart {
 
   formatNumber(price) {
     return parseFloat(Math.ceil(price * 100) / 100).toFixed(2);
+  }
+
+  addTaxRate(taxRate) {
+    this.taxRate = taxRate;
   }
 }
